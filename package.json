@@ -9,6 +9,6 @@
     "cheerio": "^1.0.0"
   },
   "scripts": {
-    "test": "node test/parsers.test.mjs && node test/hls.test.mjs && node test/yt.test.mjs"
+    "test": "node test/parsers.test.mjs && node test/hls.test.mjs && node test/yt.test.mjs && node test/file.test.mjs"
   }
 }

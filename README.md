@@ -21,6 +21,12 @@ El frontend arma los enlaces de cada episodio reemplazando `{n}`.
 
 `GET /api/hls?url=<stream>` → **proxy de TV en vivo**. Trae un stream HLS del lado servidor y lo re-sirve por HTTPS + CORS, reescribiendo la lista para que los segmentos también pasen por el proxy. Resuelve los canales que el navegador bloquea por CORS o por "mixed content" (stream HTTP en una web HTTPS), para que se reproduzcan **dentro de la app** sin abrir pestañas.
 
+`GET /api/file?url=<archivo>` → **proxy de archivos para el visor**. Trae un archivo (PDF, CBZ, CBR, EPUB…) del lado servidor y lo re-sirve con CORS, para que el visor pueda abrirlo cuando el servidor de origen no deja descargarlo desde el navegador. Reenvía las peticiones `Range`, así que pdf.js puede pedir solo el trozo que necesita.
+
+Corre en el **runtime Edge** a propósito: las funciones normales de Vercel topan la respuesta en 4,5 MB y un CBZ pasa de eso fácilmente; en Edge el cuerpo se devuelve en streaming. Aun así hay un tope de tiempo, por lo que para archivos muy pesados conviene usar el **servidor local** de la app (`node server.mjs`, que expone el mismo `/api/file` sin límites).
+
+Seguridad: solo `http`/`https`, y se rechazan destinos de red privada o de metadatos (`localhost`, `10.x`, `192.168.x`, `172.16-31.x`, `169.254.169.254`, IPv6 locales…) para que no sirva de puente hacia la red interna (SSRF).
+
 `GET /api/health` → estado y proveedores soportados.
 
 > Nota de uso: el proxy de video consume ancho de banda y tiempo de función. En el plan gratuito de Vercel es ideal para **uso personal**; no está pensado para servir a muchos usuarios.
